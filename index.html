@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html ng-app="PriceComparisonSearch">
+<head>
+<!-- <meta http-equiv="Access-Control-Allow-Origin" content="*">
+<header name="Access-Control-Allow-Origin" value="*"></header> -->
+	<title></title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+	<!-- <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script> -->
+	<!-- <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script> -->
+	<!-- <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"> -->
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/hmac-sha256.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/components/enc-base64-min.js"></script>
+	<script  src="script.js"></script>
+	<script  src="xml2json.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-filter/0.5.8/angular-filter.min.js"></script>
+<link href="https://fonts.googleapis.com/css?family=Open+Sans:300" rel="stylesheet">
+	<script src="rzslider.min.js"></script>
+	
+	<link rel="stylesheet"  href="rzslider.min.css">
+
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+<!--     <link rel="stylesheet" href="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css"> -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script>
+
+  
+ 
+  
+</script>
+
+<style type="text/css">
+	
+	*{
+		margin: 0;
+		margin-top: 0;
+		margin-left: 0;
+		margin-right: 0;
+		
+		
+		padding: 0;
+	}
+	ul.products li {
+     width: 33%;
+    display: inline-block;
+    vertical-align: top;
+    float: left;
+}
+
+
+</style>
+</head>
+
+
+<body ng-controller="MainController">
+
+  <div style="background-color:black;height:10vh;width:100%;">
+
+   <form class="form-inline" style="top:25%;position: relative;" ng-submit="search()" >
+  <div class="form-group" style="text-align:center;width:100%;"  >
+   
+   <input class="form-control" id="inputdefault" type="text" style="width:50%;" ng-model="searchquery">
+
+   <input type="submit" value="Search"  class="btn btn-primary">
+
+ </div>
+ </form>
+
+
+</div>  
+ 
+
+<div class="row">
+	
+<div class="col-md-2" style="width:15% !important;">
+<h4 ng-show="items">Brand</h4>
+<ul  style="overflow:hidden; overflow-y:auto;height:20vh; width:70%;margin-left:5%;">
+    <li ng-repeat="item in items|unique: 'ItemAttributes.Brand'"  >
+	<!-- <li> -->
+
+	<input type="checkbox"  ng-true-value="'{{item.ItemAttributes.Brand}}'" ng-false-value="" ng-click="runfilter()"  ng-model="brand[$index]">
+	<!-- <p>{{expression}}</p> -->
+	<label>{{item.ItemAttributes.Brand}}</label>
+
+
+	</li>
+	</ul>
+<!-- <div id="slider-range">
+<div class="ui-slider-range ui-corner-all ui-widget-header" ></div>	
+<span tabindex="0" class="ui-slider-handle ui-corner-all ui-state-default" ></span>
+<span tabindex="0" class="ui-slider-handle ui-corner-all ui-state-default"></span>
+</div>	 -->
+<div style="margin-left:5%;font-family: 'Open Sans', sans-serif;">
+<rzslider 
+    rz-slider-model="slider.min"
+    rz-slider-high="slider.max"
+    rz-slider-options="slider.options"></rzslider>
+
+<form ng-submit="priceFilter()">
+   <input type="text" value="{{slider.min}}"  ng-model-options="{updateOn: 'submit'}" ng-model="slider.min" style="width:40%;">
+   <span> -</span>
+   <input type="text" value="{{slider.max}}"  ng-model-options="{updateOn: 'submit'}" ng-model="slider.max" style="width: 40%;">
+   <button style="margin-left:35%;margin-top:5%;" class=" btn-primary">
+   &nbsp;GO&nbsp;</button>
+
+   </form>
+    </div>
+<!-- 	<div data-role="rangeslider">
+        <label for="price-min">Price:</label>
+        <input type="range" name="price-min" id="price-min" value="200" min="0" max="1000">
+        <label for="price-max">Price:</label>
+        <input type="range" name="price-max" id="price-max" value="800" min="0" max="1000">
+      </div> -->
+
+
+</div>
+<div class="col-md-10" style="width:85% !important;">
+
+
+
+	
+
+<!-- <select ng-model="sortOrder" style="border-radius:3px;padding: 12px 12px 12px 10px;width:225px;border: 1px solid #e8e8e8;margin-top: 2%;">
+<option value='+ItemAttributes.ListPrice.Amount' >Price: Low  To High &nbsp;&nbsp;</option>	
+<option value='-ItemAttributes.ListPrice.Amount' >Price: High To Low &nbsp;&nbsp;</option>	
+</select> -->
+<div ng-show="items" class="dropdown" style="margin-top:1%;margin-left:85%;">
+    <button class="btn btn-primary dropdown-toggle"  type="button" data-toggle="dropdown">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sort&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <span class="caret"></span></button>
+    <ul class="dropdown-menu">
+      <li><a href ng-click="sortAscending()">Low-High</a></li>
+      <li><a  href ng-click="sortDecending()" >High-Low</a></li>
+      
+    </ul>
+  </div>
+
+
+
+
+
+<ul  class="products" style="margin-top:2%;">
+
+<li   class="prod" ng-repeat="item in items |filter:customfilter()|filter:priceFilter()" style="
+  width: 30%;float: left;margin-right:3%;" data-price="{{item.ItemAttributes.ListPrice.Amount}}" >
+
+            <div style="width:80%;margin: 0 auto;">
+ <img ng-src="{{item.LargeImage.URL || item.ImageSets.ImageSet[0].LargeImage.URL || item.ImageSets.ImageSet.LargeImage.URL}}" style="height:254px;object-fit: contain;width: 100%;display: block;"   />
+
+
+
+ 	
+ <div id="#mysort">
+ 	
+ 
+ <p style="text-align: center;line-height: 1.5em;
+    height: 3em; overflow: hidden;">{{item.ItemAttributes.Title}}</p>
+
+
+<p style="text-align: center;">{{item.ItemAttributes.ListPrice.FormattedPrice}}
+
+</p>
+<div>
+	
+
+	<span class="price" style="display: none;">{{item.ItemAttributes.ListPrice.Amount}}</span>
+	<!-- <img src="img/amazon.jpg" style="display: block;margin: 0 auto;"> -->
+</div>
+
+ </div>   
+ </div>
+
+
+</li>
+           
+
+</ul>
+
+
+
+</div>
+
+
+
+</div>
+
+<div  class="row">
+	
+
+<button ng-show="items" class="btn btn-default" style=" margin: 0 auto;display: block;width:25%;background-color:#232f3e;color:white;" ng-click="LoadMore()">Load More</button>
+<p style="text-align: center;">{{NoMoreItems}}</p>
+</div>
+
+
+</body>
+</html>
